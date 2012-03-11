@@ -1,0 +1,121 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="NxtTransmitter.MainPivotPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:local="clr-namespace:NxtTransmitter"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="800"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait"  Orientation="Portrait"
+    shell:SystemTray.IsVisible="False"
+    shell:SystemTray.Opacity="0.5" xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit">
+    <shell:SystemTray.ProgressIndicator>
+        <shell:ProgressIndicator IsIndeterminate="True" Text="loading now..."  />
+    </shell:SystemTray.ProgressIndicator>
+    <phone:PhoneApplicationPage.Resources>
+        <local:ConfigurationModel x:Key="appSettings"></local:ConfigurationModel>
+    </phone:PhoneApplicationPage.Resources>
+
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <!--Pivot Control-->
+        <controls:Pivot Title="NXT Transmitter" SelectionChanged="Pivot_SelectionChanged">
+            <!--Pivot Transmitter-->
+            <controls:PivotItem Header="Transmitter">
+                <Grid>
+                    <Button Content="Start" Height="72" HorizontalAlignment="Left" Margin="12,535,0,0" Name="startButton" VerticalAlignment="Top" Width="160" Click="startButton_Click" />
+                    <Button Content="Stop" Height="72" HorizontalAlignment="Left" Margin="290,535,0,0" Name="stopButton" VerticalAlignment="Top" Width="160" Click="stopButton_Click" IsEnabled="False" />
+                    <Rectangle Height="324" HorizontalAlignment="Left" Margin="9,205,0,0" Name="infoRectangle" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="LightSlateGray"/>
+                    <Grid Height="190" HorizontalAlignment="Left" Margin="3,4,0,0" Name="DebugGrid" VerticalAlignment="Top" Width="447" Visibility="{Binding Source={StaticResource appSettings}, Path=DebugPanelVisibility, Mode=TwoWay}" >
+                        <Button Content="FWD" Tag="forward" Height="69" HorizontalAlignment="Left" Margin="148,0,0,0" Name="fwdButton" VerticalAlignment="Top" Width="133" Click="debugButton_Click" />
+                        <Button Content="REV" Tag="forward"  Height="69" HorizontalAlignment="Left" Margin="148,104,0,0" Name="revButton" VerticalAlignment="Top" Width="133" Click="debugButton_Click" />
+                        <Button Content="LEFT" Tag="left" Height="69" HorizontalAlignment="Left" Margin="32,51,0,0" Name="leftButton" VerticalAlignment="Top" Width="133" Click="debugButton_Click" />
+                        <Button Content="RIGHT" Tag="right" Height="69" HorizontalAlignment="Left" Margin="264,51,0,0" Name="rightButton" VerticalAlignment="Top" Width="133" Click="debugButton_Click" />
+                        <Button Content="STOP" Tag="stop" Height="69" HorizontalAlignment="Left" Margin="148,51,0,0" Name="haltButton" VerticalAlignment="Top" Width="133" Click="debugButton_Click" />
+                        <Button Content="GRAB" Tag="grab" Height="69" HorizontalAlignment="Left" Margin="9,120,0,0" Name="grabButton" VerticalAlignment="Top" Width="133" Click="debugButton_Click" />
+                        <Button Content="DROP" Tag="drop" Height="69" HorizontalAlignment="Left" Margin="287,123,0,0" Name="dropButton" VerticalAlignment="Top" Width="133" Click="debugButton_Click" />
+                    </Grid>
+                    <TextBlock Height="36" HorizontalAlignment="Left" Margin="11,204,0,0" Name="currentCommandTextBlock" Text="" VerticalAlignment="Top" Width="230" />
+                </Grid>
+            </controls:PivotItem>
+
+            <!--Configure pivot-->
+            <controls:PivotItem Header="Configure" Name="ConfigurationPivot">
+                <ScrollViewer>
+                <StackPanel Orientation="Vertical">
+                    <toolkit:ToggleSwitch Header="Debug Mode" HorizontalAlignment="Left" Margin="0,0,0,0" Name="debugModeSwitch" VerticalAlignment="Top" Width="440" IsChecked="{Binding Source={StaticResource appSettings}, Path=DebugMode, Mode=TwoWay}" />
+                    <toolkit:ToggleSwitch Header="Production Mode" HorizontalAlignment="Left" Margin="0,0,0,0" Name="productionModeSwitch" VerticalAlignment="Top" Width="440" IsChecked="{Binding Source={StaticResource appSettings}, Path=ProductionMode, Mode=TwoWay}"/>
+                    <TextBlock Text="Production URL"
+                           Foreground="{StaticResource PhoneSubtleBrush}"
+                           Margin="12, 0,0,0"/>
+                    <TextBox Height="74" Name="productionUrl" Text="{Binding Source={StaticResource appSettings}, Path=ProductionUrl, Mode=TwoWay}" Width="450">
+                        <TextBox.InputScope>
+                            <InputScope>
+                                <InputScopeName NameValue="Url" />
+                            </InputScope>
+                        </TextBox.InputScope>
+                    </TextBox>
+                    <TextBlock Text="Development URL"
+                           Foreground="{StaticResource PhoneSubtleBrush}"
+                           Margin="12, 0,0,0"/>
+                    <TextBox Height="74" Name="developmentUrl" Text="{Binding Source={StaticResource appSettings}, Path=DevelopmentUrl, Mode=TwoWay}" Width="450">
+                        <TextBox.InputScope>
+                            <InputScope>
+                                <InputScopeName NameValue="Url" />
+                            </InputScope>
+                        </TextBox.InputScope>
+                    </TextBox>
+                    <TextBlock Text="Interval in seconds between two polling requests to server. Default value is 5 seconds."
+                           Foreground="{StaticResource PhoneSubtleBrush}"
+                           Margin="12, 0,0,0" Height="57" Width="432" TextWrapping="Wrap" />
+                    <TextBox Height="74" Name="pollingInterval" Text="{Binding Source={StaticResource appSettings}, Path=PollingInterval, Mode=TwoWay}" Width="450">
+                        <TextBox.InputScope>
+                            <InputScope>
+                                <InputScopeName NameValue="Digits" />
+                            </InputScope>
+                        </TextBox.InputScope>
+                    </TextBox>
+                    <TextBlock Text="Duration of color transmission token. Value is in seconds. Default value is 1 second."
+                           Foreground="{StaticResource PhoneSubtleBrush}"
+                           Margin="12, 0,0,0" TextWrapping="Wrap" />
+                    <TextBox Height="74" Name="tokenDuration" Text="{Binding Source={StaticResource appSettings}, Path=TokenDuration, Mode=TwoWay}" Width="450">
+                        <TextBox.InputScope>
+                            <InputScope>
+                                <InputScopeName NameValue="Number" />
+                            </InputScope>
+                        </TextBox.InputScope>
+                    </TextBox>
+                    <toolkit:ToggleSwitch Header="Debug JSON" HorizontalAlignment="Left" Margin="0,0,0,0" Name="debugJSON" VerticalAlignment="Top" Width="440" IsChecked="{Binding Source={StaticResource appSettings}, Path=DebugJson, Mode=TwoWay}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </controls:PivotItem>
+            <!--Pivot Transmitter-->
+            <controls:PivotItem Header="Calibrate">
+                <Grid>
+                    <Rectangle Height="424" HorizontalAlignment="Left" Margin="0,205,0,0" Name="whiteRectangle" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="White" Tap="whiteRectangle_Tap" />
+                    <Rectangle Height="424" HorizontalAlignment="Left" Margin="0,205,0,0" Name="lightGrayRectangle" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="LightGray" Visibility="Collapsed" Tap="lightGrayRectangle_Tap" />
+                    <Rectangle Height="424" HorizontalAlignment="Left" Margin="0,205,0,0" Name="darkGrayRectangle" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="DarkGray" Visibility="Collapsed" Tap="darkGrayRectangle_Tap" />
+                    <Rectangle Height="424" HorizontalAlignment="Left" Margin="0,205,0,0" Name="grayRectangle" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="Gray" Visibility="Collapsed" Tap="grayRectangle_Tap" />
+                    <Rectangle Height="424" HorizontalAlignment="Left" Margin="0,205,0,0" Name="darkSlateGrayRectangle" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="DarkSlateGray" Visibility="Collapsed" Tap="darkSlateGrayRectangle_Tap" />
+                    <Rectangle Height="424" HorizontalAlignment="Left" Margin="0,205,0,0" Name="blackRectangle" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="Black" Visibility="Collapsed" Tap="blackRectangle_Tap" />
+                    <StackPanel Margin="0,0,0,436" Height="203">
+                        <Rectangle Height="30" HorizontalAlignment="Left" Margin="0,0,0,0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="White"/>
+                        <Rectangle Height="30" HorizontalAlignment="Left" Margin="0,0,0,0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="LightGray"/>
+                        <Rectangle Height="30" HorizontalAlignment="Left" Margin="0,0,0,0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="DarkGray"/>
+                        <Rectangle Height="30" HorizontalAlignment="Left" Margin="0,0,0,0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="Gray"/>
+                        <Rectangle Height="30" HorizontalAlignment="Left" Margin="0,0,0,0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="DarkSlateGray"/>
+                        <Rectangle Height="30" HorizontalAlignment="Left" Margin="0,0,0,0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="447" Fill="Black"/>
+                    </StackPanel>
+                </Grid>
+            </controls:PivotItem>
+        </controls:Pivot>
+    </Grid>
+</phone:PhoneApplicationPage>
